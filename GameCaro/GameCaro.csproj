@@ -9,9 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GameCaro</RootNamespace>
     <AssemblyName>GameCaro</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,8 +47,6 @@
   <ItemGroup>
     <Compile Include="CaRo.cs" />
     <Compile Include="DuLieuLuotDi.cs" />
-    <Compile Include="frmChoiOnline.cs" />
-    <Compile Include="frmChoiVoiMay.cs" />
     <Compile Include="frmHaiNguoiChoi.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,7 +75,6 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

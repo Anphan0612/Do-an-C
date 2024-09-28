@@ -26,22 +26,6 @@ namespace GameCaro
             this.Show();
         }
 
-        private void btnChoiVoiMay_Click(object sender, EventArgs e)
-        {
-            this.Hide();
-            frmChoiVoiMay frm = new frmChoiVoiMay();
-            frm.ShowDialog();
-            frm = null;
-            this.Show();
-        }
-        private void btnDanhOnline_Click(object sender, EventArgs e)
-        {
-            this.Hide();
-            frmChoiOnline frm = new frmChoiOnline();
-            frm.ShowDialog();
-            frm = null;
-            this.Show();
-        }
         private void btnHuongDan_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Game caro 2 người chơi.\nĐi 5 quân cờ liên tục thì thắng. Nhưng nếu bị chặn 2 đầu thì không tính.");
@@ -53,8 +37,5 @@ namespace GameCaro
             if (ret == DialogResult.Yes)
                 Close();
         }
-
-     
-        
     }
 }
