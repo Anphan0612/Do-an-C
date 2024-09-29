@@ -25,6 +25,22 @@ namespace GameCaro
             frm = null;
             this.Show();
         }
+        private void btnChoiVoiMay_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            frmChoiVoiMay frm = new frmChoiVoiMay();
+            frm.ShowDialog();
+            frm = null;
+            this.Show();
+        }
+        private void btnChoiOnline_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            frmChoiOnline frm = new frmChoiOnline();
+            frm.ShowDialog();
+            frm = null;
+            this.Show();
+        }
 
         private void btnHuongDan_Click(object sender, EventArgs e)
         {
