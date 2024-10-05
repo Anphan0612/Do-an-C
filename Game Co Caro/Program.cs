@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GameCaro
+namespace Game_Co_Caro
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace GameCaro
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmMain());
+            Application.Run(new Form1());
         }
     }
 }
