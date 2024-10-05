@@ -338,17 +338,17 @@ namespace Game_Co_Caro
         {
             if (gameover) return;
             long max = 0;
-            int imax = rows / 2, jmax = columns / 2; // Ưu tiên đi ở trung tâm
+            int imax = rows / 2, jmax = columns / 2;
             for (int i = 1; i < rows; i++)
             {
                 for (int j = 1; j < columns; j++)
                     if (vtMap[i, j] == 0)
                     {
                         long temp = Caculate(i, j);
-                        // Tăng trọng số cho các vị trí ở trung tâm
+                        
                         if (i >= rows / 3 && i <= 2 * rows / 3 && j >= columns / 3 && j <= 2 * columns / 3)
                         {
-                            temp += 10;  // Tăng trọng số cho các nước ở trung tâm
+                            temp += 10;  
                         }
                         if (temp > max)
                         {
@@ -382,7 +382,6 @@ namespace Game_Co_Caro
                 j += dy;
             }
 
-            // Kiểm tra xem có ô trống ở đầu chuỗi hay không
             if (IsInsideBounds(i, j) && vtMap[i, j] == 0)
             {
                 openEnds = 1;
@@ -477,10 +476,9 @@ namespace Game_Co_Caro
             long Sum = Attack[row] + Attack[column] + Attack[mdiagonal] + Attack[ediagonal];
 
 
-            // Nếu chuỗi tấn công của AI đã có 4 quân, tăng thêm điểm để khuyến khích tấn công mạnh hơn
             if (column == 4 || row == 4 || mdiagonal == 4 || ediagonal == 4)
             {
-                Sum += 5000;  // Tăng trọng số cho các chuỗi đã có 4 quân
+                Sum += 5000;  
             }
 
 
@@ -559,7 +557,7 @@ namespace Game_Co_Caro
             if (row == 4) row = 5;
             if (mdiagonal == 4) mdiagonal = 5;
             if (ediagonal == 4) ediagonal = 5;
-            if (column == 3 && sc == 1 && sc_ == 1) column = 5; // Ưu tiên chặn chuỗi 3 quân có 2 đầu trống
+            if (column == 3 && sc == 1 && sc_ == 1) column = 5; 
             if (row == 3 && sr == 1 && sr_ == 1) row = 5;
             if (mdiagonal == 3 && sm == 1 && sm_ == 1) mdiagonal = 5;
             if (ediagonal == 3 && se == 1 && se_ == 1) ediagonal = 5;
