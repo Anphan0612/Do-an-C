@@ -14,6 +14,7 @@ namespace Game_Co_Caro
     {
         private Label[,] Map;
         private static int columns, rows;
+        
         private int player;
         private bool gameover;
         private bool vsComputer;
@@ -317,9 +318,8 @@ namespace Game_Co_Caro
 
         #region AI
 
-        private int[] Attack = new int[7] { 0, 10, 60, 200, 1800, 16000, 150000 };
-        private int[] Defense = new int[7] { 0, 5, 30, 120, 1000, 9000, 80000 };
-
+        private int[] Attack = new int[7] { 0, 9, 54, 162, 1458, 13112, 118008 };
+        private int[] Defense = new int[7] { 0, 3, 27, 99, 729, 6561, 59049 };
 
         private void PutChess(int x, int y)
         {
@@ -338,123 +338,90 @@ namespace Game_Co_Caro
         {
             if (gameover) return;
             long max = 0;
-            int imax = rows / 2, jmax = columns / 2;
+            int imax = 1, jmax = 1;
             for (int i = 1; i < rows; i++)
             {
                 for (int j = 1; j < columns; j++)
                     if (vtMap[i, j] == 0)
                     {
                         long temp = Caculate(i, j);
-                        
-                        if (i >= rows / 3 && i <= 2 * rows / 3 && j >= columns / 3 && j <= 2 * columns / 3)
-                        {
-                            temp += 10;  
-                        }
                         if (temp > max)
                         {
                             max = temp;
-                            imax = i;
-                            jmax = j;
+                            imax = i; jmax = j;
                         }
                     }
             }
             PutChess(imax, jmax);
         }
-
         private long Caculate(int x, int y)
         {
             return EnemyChesses(x, y) + ComputerChesses(x, y);
         }
-        private bool IsInsideBounds(int i, int j)
-        {
-            return i >= 0 && i < rows && j >= 0 && j < columns;
-        }
-        private int CountInDirection(int x, int y, int dx, int dy, int playerType, out int openEnds)
-        {
-            int count = 0;
-            openEnds = 0;
-
-            int i = x + dx, j = y + dy;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == playerType)
-            {
-                count++;
-                i += dx;
-                j += dy;
-            }
-
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0)
-            {
-                openEnds = 1;
-            }
-
-            return count;
-        }
-
-
         private long ComputerChesses(int x, int y)
         {
             int i = x - 1, j = y;
             int column = 0, row = 0, mdiagonal = 0, ediagonal = 0;
             int sc_ = 0, sc = 0, sr_ = 0, sr = 0, sm_ = 0, sm = 0, se_ = 0, se = 0;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && i >= 0)
+            while (vtMap[i, j] == 2 && i >= 0)
             {
                 column++;
                 i--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sc_ = 1;
+            if (vtMap[i, j] == 0) sc_ = 1;
             i = x + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && i <= rows)
+            while (vtMap[i, j] == 2 && i <= rows)
             {
                 column++;
                 i++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sc = 1;
+            if (vtMap[i, j] == 0) sc = 1;
             i = x; j = y - 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && j >= 0)
+            while (vtMap[i, j] == 2 && j >= 0)
             {
                 row++;
                 j--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sr_ = 1;
+            if (vtMap[i, j] == 0) sr_ = 1;
             j = y + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && j <= columns)
+            while (vtMap[i, j] == 2 && j <= columns)
             {
                 row++;
                 j++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sr = 1;
+            if (vtMap[i, j] == 0) sr = 1;
             i = x - 1; j = y - 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && i >= 0 && j >= 0)
+            while (vtMap[i, j] == 2 && i >= 0 && j >= 0)
             {
                 mdiagonal++;
                 i--;
                 j--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sm_ = 1;
+            if (vtMap[i, j] == 0) sm_ = 1;
             i = x + 1; j = y + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && i <= rows && j <= columns)
+            while (vtMap[i, j] == 2 && i <= rows && j <= columns)
             {
                 mdiagonal++;
                 i++;
                 j++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sm = 1;
+            if (vtMap[i, j] == 0) sm = 1;
             i = x - 1; j = y + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && i >= 0 && j <= columns)
+            while (vtMap[i, j] == 2 && i >= 0 && j <= columns)
             {
                 ediagonal++;
                 i--;
                 j++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) se_ = 1;
+            if (vtMap[i, j] == 0) se_ = 1;
             i = x + 1; j = y - 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 2 && i <= rows && j >= 0)
+            while (vtMap[i, j] == 2 && i <= rows && j >= 0)
             {
                 ediagonal++;
                 i++;
                 j--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) se = 1;
+            if (vtMap[i, j] == 0) se = 1;
 
             if (column == 4) column = 5;
             if (row == 4) row = 5;
@@ -475,16 +442,7 @@ namespace Game_Co_Caro
 
             long Sum = Attack[row] + Attack[column] + Attack[mdiagonal] + Attack[ediagonal];
 
-
-            if (column == 4 || row == 4 || mdiagonal == 4 || ediagonal == 4)
-            {
-                Sum += 5000;  
-            }
-
-
             return Sum;
-
-            
         }
 
         
@@ -493,75 +451,75 @@ namespace Game_Co_Caro
             int i = x - 1, j = y;
             int sc_ = 0, sc = 0, sr_ = 0, sr = 0, sm_ = 0, sm = 0, se_ = 0, se = 0;
             int column = 0, row = 0, mdiagonal = 0, ediagonal = 0;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && i >= 0)
+            while (vtMap[i, j] == 1 && i >= 0)
             {
                 column++;
                 i--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sc_ = 1;
+            if (vtMap[i, j] == 0) sc_ = 1;
             i = x + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && i <= rows)
+            while (vtMap[i, j] == 1 && i <= rows)
             {
                 column++;
                 i++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sc = 1;
+            if (vtMap[i, j] == 0) sc = 1;
             i = x; j = y - 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && j >= 0)
+            while (vtMap[i, j] == 1 && j >= 0)
             {
                 row++;
                 j--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sr_ = 1;
+            if (vtMap[i, j] == 0) sr_ = 1;
             j = y + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && j <= columns)
+            while (vtMap[i, j] == 1 && j <= columns)
             {
                 row++;
                 j++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sr = 1;
+            if (vtMap[i, j] == 0) sr = 1;
             i = x - 1; j = y - 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && i >= 0 && j >= 0)
+            while (vtMap[i, j] == 1 && i >= 0 && j >= 0)
             {
                 mdiagonal++;
                 i--;
                 j--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sm_ = 1;
+            if (vtMap[i, j] == 0) sm_ = 1;
             i = x + 1; j = y + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && i <= rows && j <= columns)
+            while (vtMap[i, j] == 1 && i <= rows && j <= columns)
             {
                 mdiagonal++;
                 i++;
                 j++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) sm = 1;
+            if (vtMap[i, j] == 0) sm = 1;
             i = x - 1; j = y + 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && i >= 0 && j <= columns)
+            while (vtMap[i, j] == 1 && i >= 0 && j <= columns)
             {
                 ediagonal++;
                 i--;
                 j++;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) se_ = 1;
+            if (vtMap[i, j] == 0) se_ = 1;
             i = x + 1; j = y - 1;
-            while (IsInsideBounds(i, j) && vtMap[i, j] == 1 && i <= rows && j >= 0)
+            while (vtMap[i, j] == 1 && i <= rows && j >= 0)
             {
                 ediagonal++;
                 i++;
                 j--;
             }
-            if (IsInsideBounds(i, j) && vtMap[i, j] == 0) se = 1;
+            if (vtMap[i, j] == 0) se = 1;
 
             if (column == 4) column = 5;
             if (row == 4) row = 5;
             if (mdiagonal == 4) mdiagonal = 5;
             if (ediagonal == 4) ediagonal = 5;
-            if (column == 3 && sc == 1 && sc_ == 1) column = 5; 
-            if (row == 3 && sr == 1 && sr_ == 1) row = 5;
-            if (mdiagonal == 3 && sm == 1 && sm_ == 1) mdiagonal = 5;
-            if (ediagonal == 3 && se == 1 && se_ == 1) ediagonal = 5;
-            
+
+            if (column == 3 && sc == 1 && sc_ == 1) column = 4;
+            if (row == 3 && sr == 1 && sr_ == 1) row = 4;
+            if (mdiagonal == 3 && sm == 1 && sm_ == 1) mdiagonal = 4;
+            if (ediagonal == 3 && se == 1 && se_ == 1) ediagonal = 4;
 
             if (column == 2 && row == 2 && sc == 1 && sc_ == 1 && sr == 1 && sr_ == 1) column = 3;
             if (column == 2 && mdiagonal == 2 && sc == 1 && sc_ == 1 && sm == 1 && sm_ == 1) column = 3;
