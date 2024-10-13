@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,101 +13,101 @@ namespace Game_Co_Caro
 {
     public partial class Form1 : Form
     {
-        private Label[,] Map;
-        private static int columns, rows;
-        
-        private int player;
-        private bool gameover;
-        private bool vsComputer;
-        private int[,] vtMap;
-        private Stack<Chess> chesses;
-        private Chess chess;
+        private Label[,] BanDo; 
+        private static int soCot, soHang;  
+
+        private int nguoiChoi; 
+        private bool ketThucTroChoi;  
+        private bool choiVoiMay;  
+        private int[,] vtBanDo;  
+        private Stack<QuanCo> cacQuanCo;  
+        private QuanCo quanCo; 
 
         public Form1()
         {
-            columns = 20;
-            rows = 17;
+            soCot = 20;
+            soHang = 17;
 
-            vsComputer = false;
-            gameover = false;
-            player = 1;          
-            Map = new Label[rows + 2, columns + 2];
-            vtMap = new int[rows + 2, columns + 2];
-            chesses = new Stack<Chess>();
+            choiVoiMay = false;
+            ketThucTroChoi = false;
+            nguoiChoi = 1;
+            BanDo = new Label[soHang + 2, soCot + 2];
+            vtBanDo = new int[soHang + 2, soCot + 2];
+            cacQuanCo = new Stack<QuanCo>();
             InitializeComponent();
 
-            BuildTable();
+            XayDungBanCo();  
         }
 
-        private void BuildTable()
+        private void XayDungBanCo()  
         {
-            for (int i = 2; i <= rows; i++)
-                for (int j = 1; j <= columns; j++)
+            for (int i = 2; i <= soHang; i++)
+                for (int j = 1; j <= soCot; j++)
                 {
-                    Map[i, j] = new Label();
-                    Map[i, j].Parent = pnTableChess;
-                    Map[i, j].Top = i * Contain.edgeChess;
-                    Map[i, j].Left = j * Contain.edgeChess;
-                    Map[i, j].Size = new Size(Contain.edgeChess-1, Contain.edgeChess-1);
-                    Map[i, j].BackColor = Color.Snow;
+                    BanDo[i, j] = new Label();
+                    BanDo[i, j].Parent = pnTableChess;
+                    BanDo[i, j].Top = i * Contain.edgeChess;
+                    BanDo[i, j].Left = j * Contain.edgeChess;
+                    BanDo[i, j].Size = new Size(Contain.edgeChess - 1, Contain.edgeChess - 1);
+                    BanDo[i, j].BackColor = Color.Snow;
 
-                    Map[i, j].MouseLeave += Form1_MouseLeave;
-                    Map[i, j].MouseEnter += Form1_MouseEnter;
-                    Map[i, j].Click += Form1_Click;
+                    BanDo[i, j].MouseLeave += Form1_MouseLeave;
+                    BanDo[i, j].MouseEnter += Form1_MouseEnter;
+                    BanDo[i, j].Click += Form1_Click;
                 }
         }
 
         private void Form1_Click(object sender, EventArgs e)
         {
-            if (gameover)
+            if (ketThucTroChoi)
                 return;
             Label lb = (Label)sender;
             int x = lb.Top / Contain.edgeChess - 1, y = lb.Left / Contain.edgeChess;
-            if (vtMap[x, y] != 0)
+            if (vtBanDo[x, y] != 0)
                 return;
-            if (vsComputer)
+            if (choiVoiMay)
             {
-                player = 1;
+                nguoiChoi = 1;
                 psbCooldownTime.Value = 0;
                 tmCooldown.Start();
-                lb.Image = Properties.Resources.o;             
-                vtMap[x, y] = 1;
-                Check(x, y);                        
-                CptFindChess();
+                lb.Image = Properties.Resources.o;
+                vtBanDo[x, y] = 1;
+                KiemTra(x, y);
+                MayTimQuanCo();
             }
             else
             {
-                if (player == 1)
+                if (nguoiChoi == 1)
                 {
                     psbCooldownTime.Value = 0;
                     tmCooldown.Start();
-                    lb.Image = Properties.Resources.o;                  
-                    vtMap[x, y] = 1;
-                    Check(x, y);
+                    lb.Image = Properties.Resources.o;
+                    vtBanDo[x, y] = 1;
+                    KiemTra(x, y);
 
-                    player = 2;
+                    nguoiChoi = 2;
                     ptbPayer.Image = Properties.Resources.x_copy;
-                    txtNamePlayer.Text = "Player2";
+                    txtNamePlayer.Text = "Người Chơi 2";
                 }
                 else
                 {
                     psbCooldownTime.Value = 0;
-                    lb.Image = Properties.Resources.x;                   
-                    vtMap[x, y] = 2;
-                    Check(x, y);
+                    lb.Image = Properties.Resources.x;
+                    vtBanDo[x, y] = 2;
+                    KiemTra(x, y);
 
-                    player = 1;
+                    nguoiChoi = 1;
                     ptbPayer.Image = Properties.Resources.onnnn;
-                    txtNamePlayer.Text = "Player1";
+                    txtNamePlayer.Text = "Người Chơi 1";
                 }
             }
-            chess = new Chess(lb, x, y);
-            chesses.Push(chess);          
+            quanCo = new QuanCo(lb, x, y);
+            cacQuanCo.Push(quanCo);
         }
 
         private void Form1_MouseEnter(object sender, EventArgs e)
         {
-            if (gameover)
+            if (ketThucTroChoi)
                 return;
             Label lb = (Label)sender;
             lb.BackColor = Color.AliceBlue;
@@ -114,50 +115,49 @@ namespace Game_Co_Caro
 
         private void Form1_MouseLeave(object sender, EventArgs e)
         {
-            if (gameover)
+            if (ketThucTroChoi)
                 return;
             Label lb = (Label)sender;
             lb.BackColor = Color.Snow;
         }
 
-        
         private void tmCooldown_Tick(object sender, EventArgs e)
         {
             psbCooldownTime.PerformStep();
             if (psbCooldownTime.Value >= psbCooldownTime.Maximum)
             {
-                Gameover();
+                KetThucTroChoi();
             }
         }
-      
+
         private void menuUndo_Click(object sender, EventArgs e)
         {
-            if (!vsComputer)
+            if (!choiVoiMay)
             {
-                Chess template = new Chess();
-                template = chesses.Pop();
-                template.lb.Image = null;
-                vtMap[template.X, template.Y] = 0;
+                QuanCo temp = new QuanCo();
+                temp = cacQuanCo.Pop();
+                temp.lb.Image = null;
+                vtBanDo[temp.X, temp.Y] = 0;
                 psbCooldownTime.Value = 0;
-                ChangePlayer();
+                DoiNguoiChoi();
             }
             else
             {
-                Chess template = new Chess();
-                template = chesses.Pop();
-                template.lb.Image = null;
-                vtMap[template.X, template.Y] = 0;
+                QuanCo temp = new QuanCo();
+                temp = cacQuanCo.Pop();
+                temp.lb.Image = null;
+                vtBanDo[temp.X, temp.Y] = 0;
 
-                template = chesses.Pop();
-                template.lb.Image = null;
-                vtMap[template.X, template.Y] = 0;
+                temp = cacQuanCo.Pop();
+                temp.lb.Image = null;
+                vtBanDo[temp.X, temp.Y] = 0;
 
                 psbCooldownTime.Value = 0;
-                player = 1;
+                nguoiChoi = 1;
             }
         }
 
-        private void menuQuit_Click_1(object sender, EventArgs e)
+        private void menuThoat_Click_1(object sender, EventArgs e)  
         {
             DialogResult dialog;
             dialog = MessageBox.Show("Bạn có chắc muốn thoát không?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -168,10 +168,10 @@ namespace Game_Co_Caro
             }
         }
 
-        private void player1VsPlayer2(object sender, EventArgs e)
+        private void NguoiChoiVsNguoiChoi(object sender, EventArgs e)  
         {
-            vsComputer = false;
-            gameover = false;
+            choiVoiMay = false;
+            ketThucTroChoi = false;
             psbCooldownTime.Value = 0;
             tmCooldown.Stop();
             pnTableChess.Controls.Clear();
@@ -179,377 +179,379 @@ namespace Game_Co_Caro
             txtNamePlayer.Text = "";
             ptbPayer.Image = null;
             menuStrip1.Parent = pnTableChess;
-            player = 1;
-            Map = new Label[rows + 2, columns + 2];
-            vtMap = new int[rows + 2, columns + 2];
-            chesses = new Stack<Chess>();
+            nguoiChoi = 1;
+            BanDo = new Label[soHang + 2, soCot + 2];
+            vtBanDo = new int[soHang + 2, soCot + 2];
+            cacQuanCo = new Stack<QuanCo>();
 
-            BuildTable();
+            XayDungBanCo();
         }
-        
-        private void PlayVsComputer(object sender, EventArgs e)
+
+        private void ChoiVoiMay(object sender, EventArgs e)  
         {
-            vsComputer = true;
-            gameover = false;
+            choiVoiMay = true;
+            ketThucTroChoi = false;
             psbCooldownTime.Value = 0;
             tmCooldown.Stop();
             pnTableChess.Controls.Clear();
 
             ptbPayer.Image = Properties.Resources.onnnn;
-            txtNamePlayer.Text = "Player";
+            txtNamePlayer.Text = "Người Chơi";
             menuStrip1.Parent = pnTableChess;
-            player = 1;
-            Map = new Label[rows + 2, columns + 2];
-            vtMap = new int[rows + 2, columns + 2];
-            chesses = new Stack<Chess>();
+            nguoiChoi = 1;
+            BanDo = new Label[soHang + 2, soCot + 2];
+            vtBanDo = new int[soHang + 2, soCot + 2];
+            cacQuanCo = new Stack<QuanCo>();
 
-            BuildTable();
+            XayDungBanCo();
         }
 
-        private void Gameover()
+        private void KetThucTroChoi() 
         {
             tmCooldown.Stop();
-            gameover = true;
-            backgroundgameover();
+            ketThucTroChoi = true;
+            nenKetThucTroChoi();
         }
-        private void backgroundgameover()
+
+        private void nenKetThucTroChoi() 
         {
-            for (int i = 2; i <= rows; i++)
-                for (int j = 1; j <= columns; j++)
+            for (int i = 2; i <= soHang; i++)
+                for (int j = 1; j <= soCot; j++)
                 {
-                    Map[i, j].BackColor = Color.Gray;
+                    BanDo[i, j].BackColor = Color.Gray;
                 }
         }
 
-        private void ChangePlayer()
+        private void DoiNguoiChoi()  
         {
-            if (player == 1)
+            if (nguoiChoi == 1)
             {
-                player = 2;
-                txtNamePlayer.Text = "Player2";
+                nguoiChoi = 2;
+                txtNamePlayer.Text = "Người Chơi 2";
                 ptbPayer.Image = Properties.Resources.x_copy;
             }
             else
             {
-                player = 1;
-                txtNamePlayer.Text = "Player1";
+                nguoiChoi = 1;
+                txtNamePlayer.Text = "Người Chơi 1";
                 ptbPayer.Image = Properties.Resources.onnnn;
             }
         }
 
-        private void Check(int x, int y)
+        private void KiemTra(int x, int y)  
         {
             int i = x - 1, j = y;
-            int column = 1, row = 1, mdiagonal = 1, ediagonal = 1;
-            while (vtMap[x, y] == vtMap[i, j] && i >= 0)
+            int cot = 1, hang = 1, cheoChinh = 1, cheoPhu = 1;
+            while (vtBanDo[x, y] == vtBanDo[i, j] && i >= 0)
             {
-                column++;
+                cot++;
                 i--;
             }
             i = x + 1;
-            while (vtMap[x, y] == vtMap[i, j] && i <= rows)
+            while (vtBanDo[x, y] == vtBanDo[i, j] && i <= soHang)
             {
-                column++;
+                cot++;
                 i++;
             }
             i = x; j = y - 1;
-            while (vtMap[x, y] == vtMap[i, j] && j >= 0)
+            while (vtBanDo[x, y] == vtBanDo[i, j] && j >= 0)
             {
-                row++;
+                hang++;
                 j--;
             }
             j = y + 1;
-            while (vtMap[x, y] == vtMap[i, j] && j <= columns)
+            while (vtBanDo[x, y] == vtBanDo[i, j] && j <= soCot)
             {
-                row++;
+                hang++;
                 j++;
             }
             i = x - 1; j = y - 1;
-            while (vtMap[x, y] == vtMap[i, j] && i >= 0 && j >= 0)
+            while (vtBanDo[x, y] == vtBanDo[i, j] && i >= 0 && j >= 0)
             {
-                mdiagonal++;
-                i--;
-                j--;
+                cheoChinh++;
+                i--; j--;
             }
             i = x + 1; j = y + 1;
-            while (vtMap[x, y] == vtMap[i, j] && i <= rows && j <= columns)
+            while (vtBanDo[x, y] == vtBanDo[i, j] && i <= soHang && j <= soCot)
             {
-                mdiagonal++;
-                i++;
-                j++;
+                cheoChinh++;
+                i++; j++;
             }
             i = x - 1; j = y + 1;
-            while (vtMap[x, y] == vtMap[i, j] && i >= 0 && j <= columns)
+            while (vtBanDo[x, y] == vtBanDo[i, j] && i >= 0 && j <= soCot)
             {
-                ediagonal++;
-                i--;
-                j++;
+                cheoPhu++;
+                i--; j++;
             }
             i = x + 1; j = y - 1;
-            while (vtMap[x, y] == vtMap[i, j] && i <= rows && j >= 0)
+            while (vtBanDo[x, y] == vtBanDo[i, j] && i <= soHang && j >= 0)
             {
-                ediagonal++;
-                i++;
-                j--;
+                cheoPhu++;
+                i++; j--;
             }
-            if (row >= 5 || column >= 5 || mdiagonal >= 5 || ediagonal >= 5)
+
+            if (cot == 5 || hang == 5 || cheoChinh == 5 || cheoPhu == 5)
             {
-                Gameover();
-                if (vsComputer)
+                KetThucTroChoi();
+                if (choiVoiMay)
                 {
-                    if (player == 1)
-                        MessageBox.Show("You win!!");
+                    if (nguoiChoi == 1)
+                        MessageBox.Show("Bạn thắng !!");
                     else
-                        MessageBox.Show("You lost!!");
+                        MessageBox.Show("Bạn thua!!");
                 }
                 else
                 {
-                    if (player == 1)
-                        MessageBox.Show("Player1 Win");
+                    if (nguoiChoi == 1)
+                        MessageBox.Show("Người chơi 1 thắng");
                     else
-                        MessageBox.Show("Player2 Win");
+                        MessageBox.Show("Người chơi 2 thắng");
                 }
             }
-
         }
-
-
-
 
         #region AI
 
-        private int[] Attack = new int[7] { 0, 9, 54, 162, 1458, 13112, 118008 };
-        private int[] Defense = new int[7] { 0, 3, 27, 99, 729, 6561, 59049 };
+        private int[] TanCong = new int[7] { 0, 9, 54, 162, 1458, 13112, 118008 };
+        private int[] PhongThu = new int[7] { 0, 3, 27, 99, 729, 6561, 59049 };
 
-        private void PutChess(int x, int y)
+        private void DatCo(int x, int y)
         {
-            player = 0;
-            psbCooldownTime.Value = 0;          
-            Map[x+1, y].Image = Properties.Resources.x;
+            nguoiChoi = 0;
+            psbCooldownTime.Value = 0;
+            BanDo[x + 1, y].Image = Properties.Resources.x;
 
-            vtMap[x, y] = 2;
-            Check(x, y);
+            vtBanDo[x, y] = 2; 
+            KiemTra(x, y); 
 
-            chess = new Chess(Map[x+1, y], x, y);
-            chesses.Push(chess);
-        }
-
-        private void CptFindChess()
-        {
-            if (gameover) return;
-            long max = 0;
-            int imax = 1, jmax = 1;
-            for (int i = 1; i < rows; i++)
-            {
-                for (int j = 1; j < columns; j++)
-                    if (vtMap[i, j] == 0)
-                    {
-                        long temp = Caculate(i, j);
-                        if (temp > max)
-                        {
-                            max = temp;
-                            imax = i; jmax = j;
-                        }
-                    }
-            }
-            PutChess(imax, jmax);
-        }
-        private long Caculate(int x, int y)
-        {
-            return EnemyChesses(x, y) + ComputerChesses(x, y);
-        }
-        private long ComputerChesses(int x, int y)
-        {
-            int i = x - 1, j = y;
-            int column = 0, row = 0, mdiagonal = 0, ediagonal = 0;
-            int sc_ = 0, sc = 0, sr_ = 0, sr = 0, sm_ = 0, sm = 0, se_ = 0, se = 0;
-            while (vtMap[i, j] == 2 && i >= 0)
-            {
-                column++;
-                i--;
-            }
-            if (vtMap[i, j] == 0) sc_ = 1;
-            i = x + 1;
-            while (vtMap[i, j] == 2 && i <= rows)
-            {
-                column++;
-                i++;
-            }
-            if (vtMap[i, j] == 0) sc = 1;
-            i = x; j = y - 1;
-            while (vtMap[i, j] == 2 && j >= 0)
-            {
-                row++;
-                j--;
-            }
-            if (vtMap[i, j] == 0) sr_ = 1;
-            j = y + 1;
-            while (vtMap[i, j] == 2 && j <= columns)
-            {
-                row++;
-                j++;
-            }
-            if (vtMap[i, j] == 0) sr = 1;
-            i = x - 1; j = y - 1;
-            while (vtMap[i, j] == 2 && i >= 0 && j >= 0)
-            {
-                mdiagonal++;
-                i--;
-                j--;
-            }
-            if (vtMap[i, j] == 0) sm_ = 1;
-            i = x + 1; j = y + 1;
-            while (vtMap[i, j] == 2 && i <= rows && j <= columns)
-            {
-                mdiagonal++;
-                i++;
-                j++;
-            }
-            if (vtMap[i, j] == 0) sm = 1;
-            i = x - 1; j = y + 1;
-            while (vtMap[i, j] == 2 && i >= 0 && j <= columns)
-            {
-                ediagonal++;
-                i--;
-                j++;
-            }
-            if (vtMap[i, j] == 0) se_ = 1;
-            i = x + 1; j = y - 1;
-            while (vtMap[i, j] == 2 && i <= rows && j >= 0)
-            {
-                ediagonal++;
-                i++;
-                j--;
-            }
-            if (vtMap[i, j] == 0) se = 1;
-
-            if (column == 4) column = 5;
-            if (row == 4) row = 5;
-            if (mdiagonal == 4) mdiagonal = 5;
-            if (ediagonal == 4) ediagonal = 5;
-
-            if (column == 3 && sc == 1 && sc_ == 1) column = 4;
-            if (row == 3 && sr == 1 && sr_ == 1) row = 4;
-            if (mdiagonal == 3 && sm == 1 && sm_ == 1) mdiagonal = 4;
-            if (ediagonal == 3 && se == 1 && se_ == 1) ediagonal = 4;
-
-            if (column == 2 && row == 2 && sc == 1 && sc_ == 1 && sr == 1 && sr_ == 1) column = 3;
-            if (column == 2 && mdiagonal == 2 && sc == 1 && sc_ == 1 && sm == 1 && sm_ == 1) column = 3;
-            if (column == 2 && ediagonal == 2 && sc == 1 && sc_ == 1 && se == 1 && se_ == 1) column = 3;
-            if (row == 2 && mdiagonal == 2 && sm == 1 && sm_ == 1 && sr == 1 && sr_ == 1) column = 3;
-            if (row == 2 && ediagonal == 2 && se == 1 && se_ == 1 && sr == 1 && sr_ == 1) column = 3;
-            if (ediagonal == 2 && mdiagonal == 2 && sm == 1 && sm_ == 1 && se == 1 && se_ == 1) column = 3;
-
-            long Sum = Attack[row] + Attack[column] + Attack[mdiagonal] + Attack[ediagonal];
-
-            return Sum;
+            quanCo = new QuanCo(BanDo[x + 1, y], x, y);
+            cacQuanCo.Push(quanCo);
         }
 
         
-        private long EnemyChesses(int x, int y)
+        private void MayTimQuanCo()
+        {
+            if (ketThucTroChoi) return; 
+            long max = 0;
+            int imax = 1, jmax = 1;
+            for (int i = 1; i < soHang; i++)
+            {
+                for (int j = 1; j < soCot; j++)
+                    if (vtBanDo[i, j] == 0) 
+                    {
+                        long temp = TinhToan(i, j); 
+                        if (temp > max)
+                        {
+                            max = temp;
+                            imax = i; jmax = j; 
+                        }
+                    }
+            }
+            DatCo(imax, jmax); 
+        }
+
+        private long TinhToan(int x, int y)
+        {
+            return QuanCoDich(x, y) + QuanCoMay(x, y);
+        }
+
+        private long QuanCoMay(int x, int y)
+        {
+            int i = x - 1, j = y;
+            int cot = 0, hang = 0, cheoChinh = 0, cheoPhu = 0;
+            int sc_ = 0, sc = 0, sr_ = 0, sr = 0, sm_ = 0, sm = 0, se_ = 0, se = 0;
+
+            while (vtBanDo[i, j] == 2 && i >= 0)
+            {
+                cot++;
+                i--;
+            }
+            if (vtBanDo[i, j] == 0) sc_ = 1; 
+            i = x + 1;
+            while (vtBanDo[i, j] == 2 && i <= soHang)
+            {
+                cot++;
+                i++;
+            }
+            if (vtBanDo[i, j] == 0) sc = 1; 
+
+            i = x; j = y - 1;
+            while (vtBanDo[i, j] == 2 && j >= 0)
+            {
+                hang++;
+                j--;
+            }
+            if (vtBanDo[i, j] == 0) sr_ = 1; 
+            j = y + 1;
+            while (vtBanDo[i, j] == 2 && j <= soCot)
+            {
+                hang++;
+                j++;
+            }
+            if (vtBanDo[i, j] == 0) sr = 1;
+
+            i = x - 1; j = y - 1;
+            while (vtBanDo[i, j] == 2 && i >= 0 && j >= 0)
+            {
+                cheoChinh++;
+                i--; j--;
+            }
+            if (vtBanDo[i, j] == 0) sm_ = 1; 
+            i = x + 1; j = y + 1;
+            while (vtBanDo[i, j] == 2 && i <= soHang && j <= soCot)
+            {
+                cheoChinh++;
+                i++; j++;
+            }
+            if (vtBanDo[i, j] == 0) sm = 1; 
+
+            i = x - 1; j = y + 1;
+            while (vtBanDo[i, j] == 2 && i >= 0 && j <= soCot)
+            {
+                cheoPhu++;
+                i--; j++;
+            }
+            if (vtBanDo[i, j] == 0) se_ = 1; 
+            i = x + 1; j = y - 1;
+            while (vtBanDo[i, j] == 2 && i <= soHang && j >= 0)
+            {
+                cheoPhu++;
+                i++; j--;
+            }
+            if (vtBanDo[i, j] == 0) se = 1; 
+
+            if (cot == 4) cot = 5;
+            if (hang == 4) hang = 5;
+            if (cheoChinh == 4) cheoChinh = 5;
+            if (cheoPhu == 4) cheoPhu = 5;
+
+            if (cot == 3 && sc == 1 && sc_ == 1) cot = 4;
+            if (hang == 3 && sr == 1 && sr_ == 1) hang = 4;
+            if (cheoChinh == 3 && sm == 1 && sm_ == 1) cheoChinh = 4;
+            if (cheoPhu == 3 && se == 1 && se_ == 1) cheoPhu = 4;
+
+            if (cot == 2 && hang == 2 && sc == 1 && sc_ == 1 && sr == 1 && sr_ == 1) cot = 3;
+            if (cot == 2 && cheoChinh == 2 && sc == 1 && sc_ == 1 && sm == 1 && sm_ == 1) cot = 3;
+            if (cot == 2 && cheoPhu == 2 && sc == 1 && sc_ == 1 && se == 1 && se_ == 1) cot = 3;
+            if (hang == 2 && cheoChinh == 2 && sm == 1 && sm_ == 1 && sr == 1 && sr_ == 1) cot = 3;
+            if (hang == 2 && cheoPhu == 2 && se == 1 && se_ == 1 && sr == 1 && sr_ == 1) cot = 3;
+            if (cheoPhu == 2 && cheoChinh == 2 && sm == 1 && sm_ == 1 && se == 1 && se_ == 1) cot = 3;
+
+            long Tong = TanCong[hang] + TanCong[cot] + TanCong[cheoChinh] + TanCong[cheoPhu];
+
+            return Tong;
+        }
+
+        private long QuanCoDich(int x, int y)
         {
             int i = x - 1, j = y;
             int sc_ = 0, sc = 0, sr_ = 0, sr = 0, sm_ = 0, sm = 0, se_ = 0, se = 0;
-            int column = 0, row = 0, mdiagonal = 0, ediagonal = 0;
-            while (vtMap[i, j] == 1 && i >= 0)
+            int cot = 0, hang = 0, cheoChinh = 0, cheoPhu = 0;
+
+            while (vtBanDo[i, j] == 1 && i >= 0)
             {
-                column++;
+                cot++;
                 i--;
             }
-            if (vtMap[i, j] == 0) sc_ = 1;
+            if (vtBanDo[i, j] == 0) sc_ = 1; 
             i = x + 1;
-            while (vtMap[i, j] == 1 && i <= rows)
+            while (vtBanDo[i, j] == 1 && i <= soHang)
             {
-                column++;
+                cot++;
                 i++;
             }
-            if (vtMap[i, j] == 0) sc = 1;
+            if (vtBanDo[i, j] == 0) sc = 1; 
+
             i = x; j = y - 1;
-            while (vtMap[i, j] == 1 && j >= 0)
+            while (vtBanDo[i, j] == 1 && j >= 0)
             {
-                row++;
+                hang++;
                 j--;
             }
-            if (vtMap[i, j] == 0) sr_ = 1;
+            if (vtBanDo[i, j] == 0) sr_ = 1; 
             j = y + 1;
-            while (vtMap[i, j] == 1 && j <= columns)
+            while (vtBanDo[i, j] == 1 && j <= soCot)
             {
-                row++;
+                hang++;
                 j++;
             }
-            if (vtMap[i, j] == 0) sr = 1;
+            if (vtBanDo[i, j] == 0) sr = 1; 
+
             i = x - 1; j = y - 1;
-            while (vtMap[i, j] == 1 && i >= 0 && j >= 0)
+            while (vtBanDo[i, j] == 1 && i >= 0 && j >= 0)
             {
-                mdiagonal++;
-                i--;
-                j--;
+                cheoChinh++;
+                i--; j--;
             }
-            if (vtMap[i, j] == 0) sm_ = 1;
+            if (vtBanDo[i, j] == 0) sm_ = 1; 
             i = x + 1; j = y + 1;
-            while (vtMap[i, j] == 1 && i <= rows && j <= columns)
+            while (vtBanDo[i, j] == 1 && i <= soHang && j <= soCot)
             {
-                mdiagonal++;
-                i++;
-                j++;
+                cheoChinh++;
+                i++; j++;
             }
-            if (vtMap[i, j] == 0) sm = 1;
+            if (vtBanDo[i, j] == 0) sm = 1; 
+
             i = x - 1; j = y + 1;
-            while (vtMap[i, j] == 1 && i >= 0 && j <= columns)
+            while (vtBanDo[i, j] == 1 && i >= 0 && j <= soCot)
             {
-                ediagonal++;
-                i--;
-                j++;
+                cheoPhu++;
+                i--; j++;
             }
-            if (vtMap[i, j] == 0) se_ = 1;
+            if (vtBanDo[i, j] == 0) se_ = 1;
             i = x + 1; j = y - 1;
-            while (vtMap[i, j] == 1 && i <= rows && j >= 0)
+            while (vtBanDo[i, j] == 1 && i <= soHang && j >= 0)
             {
-                ediagonal++;
-                i++;
-                j--;
+                cheoPhu++;
+                i++; j--;
             }
-            if (vtMap[i, j] == 0) se = 1;
+            if (vtBanDo[i, j] == 0) se = 1; 
 
-            if (column == 4) column = 5;
-            if (row == 4) row = 5;
-            if (mdiagonal == 4) mdiagonal = 5;
-            if (ediagonal == 4) ediagonal = 5;
+            if (cot == 4) cot = 5;
+            if (hang == 4) hang = 5;
+            if (cheoChinh == 4) cheoChinh = 5;
+            if (cheoPhu == 4) cheoPhu = 5;
 
-            if (column == 3 && sc == 1 && sc_ == 1) column = 4;
-            if (row == 3 && sr == 1 && sr_ == 1) row = 4;
-            if (mdiagonal == 3 && sm == 1 && sm_ == 1) mdiagonal = 4;
-            if (ediagonal == 3 && se == 1 && se_ == 1) ediagonal = 4;
+            if (cot == 3 && sc == 1 && sc_ == 1) cot = 4;
+            if (hang == 3 && sr == 1 && sr_ == 1) hang = 4;
+            if (cheoChinh == 3 && sm == 1 && sm_ == 1) cheoChinh = 4;
+            if (cheoPhu == 3 && se == 1 && se_ == 1) cheoPhu = 4;
 
-            if (column == 2 && row == 2 && sc == 1 && sc_ == 1 && sr == 1 && sr_ == 1) column = 3;
-            if (column == 2 && mdiagonal == 2 && sc == 1 && sc_ == 1 && sm == 1 && sm_ == 1) column = 3;
-            if (column == 2 && ediagonal == 2 && sc == 1 && sc_ == 1 && se == 1 && se_ == 1) column = 3;
-            if (row == 2 && mdiagonal == 2 && sm == 1 && sm_ == 1 && sr == 1 && sr_ == 1) column = 3;
-            if (row == 2 && ediagonal == 2 && se == 1 && se_ == 1 && sr == 1 && sr_ == 1) column = 3;
-            if (ediagonal == 2 && mdiagonal == 2 && sm == 1 && sm_ == 1 && se == 1 && se_ == 1) column = 3;
-            long Sum = Defense[row] + Defense[column] + Defense[mdiagonal] + Defense[ediagonal];
+            if (cot == 2 && hang == 2 && sc == 1 && sc_ == 1 && sr == 1 && sr_ == 1) cot = 3;
+            if (cot == 2 && cheoChinh == 2 && sc == 1 && sc_ == 1 && sm == 1 && sm_ == 1) cot = 3;
+            if (cot == 2 && cheoPhu == 2 && sc == 1 && sc_ == 1 && se == 1 && se_ == 1) cot = 3;
+            if (hang == 2 && cheoChinh == 2 && sm == 1 && sm_ == 1 && sr == 1 && sr_ == 1) cot = 3;
+            if (hang == 2 && cheoPhu == 2 && se == 1 && se_ == 1 && sr == 1 && sr_ == 1) cot = 3;
+            if (cheoPhu == 2 && cheoChinh == 2 && sm == 1 && sm_ == 1 && se == 1 && se_ == 1) cot = 3;
 
-            return Sum;
+            long Tong = PhongThu[hang] + PhongThu[cot] + PhongThu[cheoChinh] + PhongThu[cheoPhu];
+
+            return Tong;
         }
-        #endregion
+
+        #endregion AI
 
     }
 
-    public class Chess
+
+    public class QuanCo  
+{
+    public Label lb;
+    public int X;
+    public int Y;
+
+    public QuanCo()
     {
-        public Label lb;
-        public int X;
-        public int Y;
-        public Chess()
-        {
-            lb = new Label();
-        }
-        public Chess(Label _lb, int x, int y)
-        {
-            lb = new Label();
-            lb = _lb;
-            X = x;
-            Y = y;
-        }
+        lb = new Label();
     }
+
+    public QuanCo(Label _lb, int x, int y)
+    {
+        lb = new Label();
+        lb = _lb;
+        X = x;
+        Y = y;
+    }
+}
+
 }

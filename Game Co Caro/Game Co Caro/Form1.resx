@@ -165,7 +165,7 @@
         XTesb3QPLh88M+QwdP6m681Lt7xuXbu94vbgcOjwnZHokdE77DtTd1PuvriXeW/h/sYH6AdFD6UeVjxS
         fNTws+7PbaOWo6fHXMf6Hwc/vj/OGn/2S8Yv7ycKnpCfVEyqTDZPmU2dmnafvvF05dOJZ+nPFmYKf5X+
         tfa5zvMffnP8rX82YnbiBf/Fp99LXsq/PPRq2aueuYC5R69TXy/MF72Rf3P4LeNt37vwd5MLWe+x7ys/
-        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAALEwAACxMBAJqcGAAA9UFJREFUeF7sfQVgVVfW
+        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAALEQAACxEBf2RfkQAA9UFJREFUeF7sfQVgVVfW
         dWoUKFKghQpQ3N3drViBIsXd3V0LBHcngQR3CO4QkpCEuBuBJMRdn7+3/rXvCx0GUhmm880/naGz573c
         d+XIXnutfe6551oA+JeY0QALk5HfTWIm8za9QTHZrjeYLEww0nIsDKZ0fqqVfQwaHqc39TAaDbd0Jh1U
         hgykGl4gMvspfOOv40n4btwInI47wQtxL3g57gevxD3/JbjluwA3vWbjvv9K3PZeits+8/EgaAHu+s/F
@@ -1988,6 +1988,9 @@
         Ev46aZy8Q5ylUlycq6LMFCD4qN7++wGV/w8wosfZHdlg8gAAAABJRU5ErkJggg==
 </value>
   </data>
+  <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
