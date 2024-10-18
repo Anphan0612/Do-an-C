@@ -35,7 +35,7 @@ namespace Game_Co_Caro
             vtBanDo = new int[soHang + 2, soCot + 2];
             cacQuanCo = new Stack<QuanCo>();
             InitializeComponent();
-
+           
             XayDungBanCo();  
         }
 
@@ -307,7 +307,110 @@ namespace Game_Co_Caro
                     else
                         MessageBox.Show("Người chơi 2 thắng");
                 }
+                HienThiMenu();
+
             }
+        }
+        private void HienThiMenu()
+        {
+            Form menuForm = new Form();
+            menuForm.Text = "Menu";
+            menuForm.Size = new Size(300, 350);
+
+            Button btnChoiLai = new Button { Text = "Chơi lại", Location = new Point(50, 30) };
+            Button btnChoiVoiMay = new Button { Text = "Chơi với máy", Location = new Point(50, 70) };
+            Button btnChoiVoiNguoi = new Button { Text = "Chơi với người", Location = new Point(50, 110), Size = new Size(100,23) };
+            Button btnChoiOnline = new Button { Text = "Chơi online", Location = new Point(50, 150) };
+
+            btnChoiLai.Click += (s, e) => { menuForm.Close(); ChoiLai(); };
+            btnChoiVoiMay.Click += (s, e) => { menuForm.Close(); ChoiVoiMay(); };
+            btnChoiVoiNguoi.Click += (s, e) => { menuForm.Close(); NguoiChoiVsNguoiChoi(); };
+            btnChoiOnline.Click += (s, e) => { menuForm.Close(); ChoiOnline(); };
+
+            menuForm.Controls.Add(btnChoiLai);
+            menuForm.Controls.Add(btnChoiVoiMay);
+            menuForm.Controls.Add(btnChoiVoiNguoi);
+            menuForm.Controls.Add(btnChoiOnline);
+
+            menuForm.ShowDialog();
+        }
+        private void ChoiLai()
+        {
+            tmCooldown.Stop();
+
+            // Khôi phục trạng thái ban đầu
+            ketThucTroChoi = false; // Trạng thái trò chơi không kết thúc
+            psbCooldownTime.Value = 0; // Đặt lại thanh thời gian
+            pnTableChess.Controls.Clear(); // Xóa bảng cờ hiện tại
+
+            // Khởi tạo lại các biến cần thiết
+            BanDo = new Label[soHang + 2, soCot + 2]; // Khởi tạo lại bảng
+            vtBanDo = new int[soHang + 2, soCot + 2]; // Khởi tạo lại vị trí bàn cờ
+            cacQuanCo = new Stack<QuanCo>(); // Khởi tạo lại stack quân cờ
+
+            // Xây dựng lại bàn cờ
+            XayDungBanCo();
+
+            // Thiết lập lại hình ảnh và tên người chơi dựa trên chế độ chơi
+            if (choiVoiMay)
+            {
+                ptbPayer.Image = Properties.Resources.onnnn; // Hình ảnh cho người chơi
+                txtNamePlayer.Text = "Người Chơi"; // Tên người chơi
+            }
+            else
+            {
+                ptbPayer.Image = null; // Hình ảnh trống cho chế độ người chơi vs. người chơi
+                txtNamePlayer.Text = ""; // Không hiển thị tên cho chế độ này
+            }
+
+            // Thiết lập lại menuStrip cho bàn cờ
+            menuStrip1.Parent = pnTableChess;
+
+            // Khởi động lại thời gian đếm ngược nếu cần
+            tmCooldown.Start();
+        }
+
+        private void ChoiVoiMay()
+        {
+            choiVoiMay = true;
+            ketThucTroChoi = false;
+            psbCooldownTime.Value = 0;
+            tmCooldown.Stop();
+            pnTableChess.Controls.Clear();
+
+            ptbPayer.Image = Properties.Resources.onnnn;
+            txtNamePlayer.Text = "Người Chơi";
+            menuStrip1.Parent = pnTableChess;
+            nguoiChoi = 1;
+            BanDo = new Label[soHang + 2, soCot + 2];
+            vtBanDo = new int[soHang + 2, soCot + 2];
+            cacQuanCo = new Stack<QuanCo>();
+
+            XayDungBanCo();
+        }
+
+        private void NguoiChoiVsNguoiChoi()
+        {
+            choiVoiMay = false;
+            ketThucTroChoi = false;
+            psbCooldownTime.Value = 0;
+            tmCooldown.Stop();
+            pnTableChess.Controls.Clear();
+
+            txtNamePlayer.Text = "";
+            ptbPayer.Image = null;
+            menuStrip1.Parent = pnTableChess;
+            nguoiChoi = 1;
+            BanDo = new Label[soHang + 2, soCot + 2];
+            vtBanDo = new int[soHang + 2, soCot + 2];
+            cacQuanCo = new Stack<QuanCo>();
+
+            XayDungBanCo();
+        }
+
+        private void ChoiOnline()
+        {
+            // Khởi động lại trò chơi online
         }
 
         #region AI
