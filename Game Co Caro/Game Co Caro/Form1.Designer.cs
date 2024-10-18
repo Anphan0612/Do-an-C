@@ -207,7 +207,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "Caro";
             this.pnShow.ResumeLayout(false);
             this.pnShow.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ptbPayer)).EndInit();
